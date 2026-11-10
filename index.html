@@ -50,6 +50,7 @@ input.ok{border-color:#2ecc71;background:#15301f}input.no{border-color:#ff3b5c;b
 .rope{display:flex;align-items:center;gap:6px;font-size:28px}.trk{flex:1;display:grid;grid-template-columns:repeat(11,1fr);height:44px}.trk i{font-style:normal;display:flex;align-items:center;justify-content:center;font-size:24px;border-top:3px solid #4a4a66;border-bottom:3px solid #4a4a66}.trk i.mid{background:rgba(237,27,118,.25)}
 .turn{display:inline-block;color:#fff;font-weight:800;padding:4px 14px;border-radius:8px;margin-top:10px}
 .srch{margin:6px 0 10px}.tw{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{padding:7px 8px;border-bottom:1px solid #34344a;text-align:left}th{color:var(--pink)}td:last-child{color:var(--mut)}
+.line{min-height:72px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;border:2px dashed #4a4a66;border-radius:12px;padding:8px;margin:14px 0}.bank{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0}.tl{font:inherit;font-weight:800;font-size:clamp(17px,4.5vw,22px);padding:10px 15px;border:2px solid #4a4a66;border-radius:99px;background:#262638;color:var(--ink);cursor:pointer}.line .tl{background:#1d8f7e;border-color:#fff}.line.bad{animation:sh .4s;border-color:#ff3b5c}.line.ok{border-color:#2ecc71;background:#15301f}
 .conf{position:fixed;top:-30px;font-size:28px;animation:fall 2.8s linear forwards;pointer-events:none;z-index:9}@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
 </style>
 </head>
@@ -61,6 +62,7 @@ const $=s=>document.querySelector(s),app=$('#app'),sh=a=>[...a].sort(()=>Math.ra
 let cfg={pool:0},tm;try{const s=JSON.parse(localStorage.getItem('vg'));if(s)cfg=s}catch(e){}
 if(cfg.len===undefined)cfg.len=35;
 const P=()=>cfg.pool==1?D.slice(0,35):cfg.pool==2?D.slice(35):D;
+const PT=()=>P().filter(x=>TR[x[0]]);
 function setLen(v){cfg.len=v;try{localStorage.setItem('vg',JSON.stringify(cfg))}catch(e){}home()}
 function setPool(v){cfg.pool=v;try{localStorage.setItem('vg',JSON.stringify(cfg))}catch(e){}home()}
 const NUM=['456','067','199'],hp=l=>'❤️'.repeat(l)+'🖤'.repeat(3-l),lv=l=>`<div class="hpb"><div class="hh">${hp(l)}</div><div class="lv">${NUM.map((n,i)=>`<span class="pl ${i<l?'':'dead'}">${n}</span>`).join('')}</div></div>`;
@@ -81,6 +83,7 @@ function home(){clearInterval(tm);app.innerHTML=`<div class="logo">○ △ □</
 <button class="mb" onclick="dal()"><i>🍪</i><span><b>Dalgona</b><small>Впиши V2 і V3 і не зламай печиво</small></span></button>
 <button class="mb" onclick="tug(1)"><i>🪢</i><span><b>Tug of War · клас</b><small>Present Perfect: команда проти команди</small></span></button>
 <button class="mb" onclick="tug(0)"><i>🔺</i><span><b>Tug of War · соло</b><small>Present Perfect проти охоронця</small></span></button>
+<button class="mb" onclick="mar()"><i>🔮</i><span><b>Marbles · переклад</b><small>UA → EN: Present Perfect, збери речення з кульок-слів</small></span></button>
 <button class="mb sm" onclick="sheet()">📋 Список усіх дієслів</button></div>`}
 
 function sheet(){app.innerHTML=`${hdr()}<h2>📋 Дієслова</h2><input class="srch" id="q" placeholder="Пошук…" oninput="fl()"><div class="tw"><table><thead><tr><th>#</th><th>V1</th><th>V2</th><th>V3</th><th>UA</th></tr></thead><tbody id="tb2"></tbody></table></div>`;fl()}
@@ -118,6 +121,28 @@ app.innerHTML=`${hdr()}<div class="panel c"><div class="rope"><b>${T[0][0]}</b><
 const to=bind(t=>t===x.c,g=>{if(team){p+=g?(turn?1:-1):(turn?-1:1);turn^=1}else{p+=g?-1:1;if(Math.random()<.3)p++}
 if(p<=-5)return fin(1,team?'Перемагає '+T[0][1]+'!':'Ти переміг(-ла) охоронця!','Канат перетягнуто','tug('+team+')');
 if(p>=5)return fin(team?1:0,team?'Перемагає '+T[1][1]+'!':'Охоронець переміг','Канат перетягнуто','tug('+team+')');q()});timer(team?20:15,to)}q()}
+const TR=Object.fromEntries(`be|побував|побувала|there|там;become|став|стала|a doctor|лікарем;begin|почав|почала|the lesson|урок;bite|вкусив|вкусила|the apple|яблуко;break|зламав|зламала|the phone|телефон;bring|приніс|принесла|the book|книжку;build|побудував|побудувала|a house|будинок;buy|купив|купила|a ticket|квиток;catch|зловив|зловила|the ball|м’яч;choose|обрав|обрала|a movie|фільм;come|прийшов|прийшла|home|додому;cut|розрізав|розрізала|the paper|папір;do|зробив|зробила|the homework|домашнє завдання;draw|намалював|намалювала|a picture|малюнок;drink|випив|випила|the juice|сік;drive|відігнав|відігнала|the car away|машину;eat|з’їв|з’їла|the pizza|піцу;fall|упав|упала|off the bike|з велосипеда;feed|нагодував|нагодувала|the cat|кота;feel|відчув|відчула|the cold|холод;fight|побився|побилася|with Tom|з Томом;find|знайшов|знайшла|the key|ключ;fly|прилетів|прилетіла|to Kyiv|до Києва;forget|забув|забула|the password|пароль;get|отримав|отримала|a message|повідомлення;give|дав|дала|Tom a gift|Тому подарунок;go|пішов|пішла|to school|до школи;grow|виростив|виростила|tomatoes|помідори;have|пообідав|пообідала|lunch|;hear|почув|почула|the news|новини;hit|влучив|влучила|the target|у ціль;keep|зберіг|зберегла|the secret|таємницю;learn|вивчив|вивчила|the poem|вірш;leave|залишив|залишила|the keys at home|ключі вдома;lend|позичив|позичила|Tom a pen|Тому ручку;lose|загубив|загубила|the wallet|гаманець;make|приготував|приготувала|a cake|торт;meet|зустрів|зустріла|Tom|Тома;pay|заплатив|заплатила|the bill|рахунок;put|поклав|поклала|the book on the table|книжку на стіл;read|прочитав|прочитала|the article|статтю;run|пробіг|пробігла|five kilometres|п’ять кілометрів;say|сказав|сказала|the truth|правду;see|побачив|побачила|a rainbow|веселку;sell|продав|продала|the bike|велосипед;send|надіслав|надіслала|a letter|листа;show|показав|показала|the photos|фотографії;sing|заспівав|заспівала|a song|пісню;sit|сів|сіла|down|;sleep|поспав|поспала|for an hour|годину;smell|понюхав|понюхала|the flowers|квіти;speak|поговорив|поговорила|to the teacher|з учителем;spend|витратив|витратила|all the money|усі гроші;stand|постояв|постояла|in the queue|у черзі;swim|поплавав|поплавала|in the pool|у басейні;take|взяв|взяла|the umbrella|парасольку;teach|навчив|навчила|Tom to swim|Тома плавати;tell|розповів|розповіла|a story|історію;think|подумав|подумала|about it|про це;throw|кинув|кинула|the stone|камінь;understand|зрозумів|зрозуміла|the rule|правило;wake|розбудив|розбудила|the baby|дитину;wear|одягнув|одягнула|a jacket|куртку;win|виграв|виграла|the game|гру;write|написав|написала|an essay|твір`.split(';').map(r=>{const a=r.split('|');return[a[0],{m:a[1],f:a[2],e:a[3],u:a[4]}]}));
+const SJ=[['He','Він','m',0],['She','Вона','f',0],['We','Ми','p',1],['They','Вони','p',1],['My brother','Мій брат','m',0],['My sister','Моя сестра','f',0],['My parents','Мої батьки','p',1],['Our teacher','Наш учитель','m',0]];
+function tr(){const v=pick(PT()),t=TR[v[0]],[S,U,g,pl]=pick(SJ),a=pl?'have':'has',w=pl?'has':'have',v3=F(v[2]),v2=F(v[1]),x2=v2!==v3?v2:reg(v[0]),kind=pick('pnq'),mk=pick([['already','вже'],['just','щойно']]),cp=x=>x[0].toUpperCase()+x.slice(1),sl=S.toLowerCase(),
+vb=g=='m'?t.m:g=='f'?t.f:t.f.replace(/ла(ся)?$/,'ли$1'),tl=t.e?' '+t.e:'',ut=t.u?' '+t.u:'';let en,ua,wr,p='.';
+if(kind=='p'){en=`${S} ${a} ${mk[0]} ${v3}${tl}`;ua=`${U} ${mk[1]} ${vb}${ut}.`;wr=[w,x2,'did']}
+else if(kind=='n'){en=`${S} ${a}n’t ${v3}${tl} yet`;ua=`${U} ще не ${vb}${ut}.`;wr=[w+'n’t',x2,'didn’t']}
+else{en=`${cp(a)} ${sl} ${v3}${tl} yet`;ua=`Чи ${U.toLowerCase()} вже ${vb}${ut}?`;wr=[cp(w),x2,'Did'];p='?'}
+return{en:en+p,ua,p,tk:en.split(' '),wr}}
+
+function mar(){let L=3,i=0,sc=0;const N=10;clearInterval(tm);
+function q(){if(i>=N)return fin(1,'Раунд пройдено!','З першої спроби: '+sc+' з '+N,'mar()');
+const x=tr();let bank=sh([...x.tk,...x.wr]).map((t,k)=>({t,k})),line=[],miss=0,done=0;
+app.innerHTML=`${hdr(lv(L))}<div class="panel c"><div class="tag">${i+1}/${N} · Present Perfect</div><div class="big sm" style="font-size:clamp(24px,6.5vw,36px)">${x.ua}</div><div class="line" id="ln"></div><div class="bank" id="bk"></div><div class="msg" id="m">Склади англійське речення</div><div id="nx"><button class="go" id="ck">✔ Перевірити</button></div></div>`;
+function draw(){$('#ln').innerHTML=line.map(o=>`<button class="tl" data-k="${o.k}">${o.t}</button>`).join('')+(line.length?x.p:'');$('#bk').innerHTML=bank.map(o=>`<button class="tl" data-k="${o.k}">${o.t}</button>`).join('')}
+function mv(a,b,k){const j=a.findIndex(o=>o.k==k);b.push(...a.splice(j,1));draw()}
+$('#ln').onclick=e=>{const b=e.target.closest('.tl');if(b&&!done)mv(line,bank,b.dataset.k)};
+$('#bk').onclick=e=>{const b=e.target.closest('.tl');if(b&&!done)mv(bank,line,b.dataset.k)};
+$('#ck').onclick=()=>{if(done||!line.length)return;const got=line.map(o=>o.t).join(' ')+x.p;
+if(got==x.en){done=1;if(!miss)sc++;$('#ln').classList.add('ok');$('#m').textContent='✅ '+x.en;$('#nx').innerHTML='<button class="go" id="go">Далі ➜</button>';$('#go').onclick=()=>{i++;q()}}
+else{miss++;L--;$('.hh').textContent=hp(L);document.querySelectorAll('.pl')[L].classList.add('dead');const ln=$('#ln');ln.classList.remove('bad');void ln.offsetWidth;ln.classList.add('bad');
+if(L<=0){done=1;fin(0,'Тебе вибито','Правильно було: '+x.en,'mar()')}else $('#m').textContent='Ой! Перевір have/has і третю форму (V3)'}};
+draw()}q()}
 home();
 </script>
 </body>
